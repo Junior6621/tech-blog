@@ -1,23 +1,34 @@
+---
+import '../styles/global.css';
+const { title, description } = Astro.props;
+---
 <!doctype html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
+		<title>{title || "Jeffrey Patton | Cloud Architect"}</title>
+		<meta name="description" content={description || "Technical insights on Azure, AWS, and Cybersecurity"} />
+		
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="website" />
 	</head>
-	<body>
-		<slot />
+	<body class="bg-slate-50 text-slate-900 antialiased">
+		<main class="max-w-4xl mx-auto px-6 py-12">
+			<nav class="mb-12 border-b border-slate-200 pb-6">
+				<a href="/" class="font-bold text-xl hover:text-blue-600 transition">JP Tech Blog</a>
+			</nav>
+			
+			<div class="prose prose-slate prose-lg max-w-none">
+				<slot />
+			</div>
+
+			<footer class="mt-20 pt-8 border-t border-slate-200 text-sm text-slate-500">
+				&copy; {new Date().getFullYear()} Jeffrey Patton. Built with Astro & AWS.
+			</footer>
+		</main>
 	</body>
 </html>
-
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>

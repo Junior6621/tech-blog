@@ -4,7 +4,7 @@ import Comments from '../components/Comments.astro';
 const { title, description } = Astro.props;
 
 // Logical check to see if the user is viewing a blog post
-const isBlogPost = Astro.url.pathname.startsWith('/blog/');
+const isBlogPost = Astro.url.pathname.startsWith('/blog');
 ---
 <!doctype html>
 <html lang="en">

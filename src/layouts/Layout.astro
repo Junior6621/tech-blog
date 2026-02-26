@@ -1,6 +1,10 @@
 ---
 import '../styles/global.css';
+import Comments from '../components/Comments.astro';
 const { title, description } = Astro.props;
+
+// Logical check to see if the user is viewing a blog post
+const isBlogPost = Astro.url.pathname.startsWith('/blog/');
 ---
 <!doctype html>
 <html lang="en">
@@ -25,6 +29,9 @@ const { title, description } = Astro.props;
 			<div class="prose prose-slate prose-lg max-w-none">
 				<slot />
 			</div>
+
+			{/* Only render the Giscus component on blog pages */}
+			{isBlogPost && <Comments />}
 
 			<footer class="mt-20 pt-8 border-t border-slate-200 text-sm text-slate-500">
 				&copy; {new Date().getFullYear()} Jeffrey Patton. Built with Astro & AWS.

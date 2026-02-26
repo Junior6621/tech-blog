@@ -19,6 +19,25 @@ const isBlogPost = Astro.url.pathname.startsWith('/blog');
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="website" />
+
+		<script is:inline>
+			(function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+				'cwr',
+				'ceedfa36-a442-4a90-af3f-5038bc82c84e',
+				'1.0.0',
+				'us-east-1',
+				'https://client.rum.us-east-1.amazonaws.com/1.19.0/cwr.js',
+				{
+					sessionSampleRate: 1 ,
+					identityPoolId: "us-east-1:5158c3c8-d592-4bc0-810b-7f15eb0376a8" ,
+					endpoint: "https://dataplane.rum.us-east-1.amazonaws.com" ,
+					telemetries: ["performance","errors","http"] ,
+					allowCookies: true ,
+					enableXRay: false ,
+					signing: true
+				}
+			);
+		</script>
 	</head>
 	<body class="bg-slate-50 text-slate-900 antialiased">
 		<main class="max-w-4xl mx-auto px-6 py-12">

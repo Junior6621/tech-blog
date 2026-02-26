@@ -2,8 +2,11 @@
 import '../styles/global.css';
 import Comments from '../components/Comments.astro';
 const { frontmatter } = Astro.props;
-const title = frontmatter?.title || Astro.props.title || "Jeff Patton | Cloud Architect";
+const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | Cloud Architect";
 const isBlogPost = Astro.url.pathname.startsWith('/blog');
+
+// Dynamic reading time calculation (approximate)
+const date = frontmatter?.date || "Feb 26, 2026";
 ---
 <!doctype html>
 <html lang="en">
@@ -23,45 +26,50 @@ const isBlogPost = Astro.url.pathname.startsWith('/blog');
 		</script>
 
 		<script>
-  (function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
-    'cwr',
-    'ceedfa36-a442-4a90-af3f-5038bc82c84e',
-    '1.0.0',
-    'us-east-1',
-    'https://client.rum.us-east-1.amazonaws.com/1.19.0/cwr.js',
-    {
-      sessionSampleRate: 1 ,
-      identityPoolId: "us-east-1:5158c3c8-d592-4bc0-810b-7f15eb0376a8" ,
-      endpoint: "https://dataplane.rum.us-east-1.amazonaws.com" ,
-      telemetries: ["performance","errors","http"] ,
-      allowCookies: true ,
-      enableXRay: false ,
-      signing: true // If you have a public resource policy and wish to send unsigned requests please set this to false
-    }
-  );
-</script>
+			(function(n,i,v,r,s,c,x,z){x=window.AwsRumClient={q:[],n:n,i:i,v:v,r:r,c:c};window[n]=function(c,p){x.q.push({c:c,p:p});};z=document.createElement('script');z.async=true;z.src=s;document.head.insertBefore(z,document.head.getElementsByTagName('script')[0]);})(
+				'cwr',
+				'ceedfa36-a442-4a90-af3f-5038bc82c84e',
+				'1.0.0',
+				'us-east-1',
+				'https://client.rum.us-east-1.amazonaws.com/1.19.0/cwr.js',
+				{
+					sessionSampleRate: 1 ,
+					identityPoolId: "us-east-1:5158c3c8-d592-4bc0-810b-7f15eb0376a8" ,
+					endpoint: "https://dataplane.rum.us-east-1.amazonaws.com" ,
+					telemetries: ["performance","errors","http"] ,
+					allowCookies: true ,
+					enableXRay: false ,
+					signing: true
+				}
+			);
+		</script>
 	</head>
-	<body class="bg-white text-slate-900 dark:bg-black dark:text-slate-100 transition-colors duration-300 antialiased">
+	<body class="bg-white text-slate-900 dark:bg-black dark:text-slate-100 transition-colors duration-300 antialiased font-sans">
 		<main class="max-w-4xl mx-auto px-6 py-12">
-			<nav class="flex justify-between items-center mb-12 border-b border-slate-200 dark:border-slate-800 pb-6">
-				<a href="/" class="font-bold text-xl">Patton Tech Blog</a>
-				<button id="themeToggle" class="p-2 rounded-lg border border-slate-200 dark:border-slate-800">
-					<span class="dark:hidden">🌙</span><span class="hidden dark:inline">☀️</span>
+			<nav class="flex justify-between items-start mb-16 border-b border-slate-200 dark:border-slate-800 pb-8">
+				<div>
+					<a href="/" class="group">
+						<h1 class="text-4xl md:text-5xl font-extrabold tracking-tighter text-slate-900 dark:text-white">
+							Patton <span class="text-blue-600 dark:text-blue-500 group-hover:text-blue-400 transition">Tech</span> Blog
+						</h1>
+					</a>
+					<p class="mt-3 text-sm font-semibold tracking-widest uppercase text-slate-500 dark:text-slate-400">
+						Cybersecurity • Cloud Infrastructure • IT Strategy
+					</p>
+				</div>
+				<button id="themeToggle" class="mt-2 p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all shadow-sm">
+					<span class="dark:hidden text-lg">🌙</span><span class="hidden dark:inline text-lg">☀️</span>
 				</button>
 			</nav>
-			
-			<article class="prose prose-slate prose-lg dark:prose-invert max-w-none">
-				<slot />
-			</article>
 
-			{isBlogPost && <Comments />}
-		</main>
-
-		<script>
-			document.getElementById('themeToggle').addEventListener('click', () => {
-				const isDark = document.documentElement.classList.toggle('dark');
-				localStorage.setItem('theme', isDark ? 'dark' : 'light');
-			});
-		</script>
-	</body>
-</html>
+			{isBlogPost && (
+				<div class="flex items-center gap-4 mb-8 text-sm font-medium text-slate-500 dark:text-slate-500">
+					<span class="flex items-center gap-1.5">
+						<div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-[10px] text-white">JP</div>
+						Jeffrey Patton
+					</span>
+					<span class="text-slate-300 dark:text-slate-800">|</span>
+					<span>{date}</span>
+					<span class="text-slate-300 dark:text-slate-800">|</span>
+					<span class="flex items-center gap-1">
+						<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3

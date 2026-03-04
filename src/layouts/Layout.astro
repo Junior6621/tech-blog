@@ -149,7 +149,7 @@ const date = frontmatter?.date || "Mar 4, 2026";
 							alert(`Error: ${errData.error || 'Server rejected request'}`);
 						}
 					} catch (err) {
-						console.error('Handshake failure:', err);
+						console.error('Connection details:', err);
 						alert('AWS Connection Error. Check console for CORS details.');
 					} finally {
 						btn.innerText = 'Join';

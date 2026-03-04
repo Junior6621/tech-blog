@@ -55,9 +55,16 @@ const date = frontmatter?.date || "Feb 26, 2026";
 						Cybersecurity • Cloud Infrastructure • IT Strategy
 					</p>
 				</div>
-				<button id="themeToggle" class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:scale-105 transition-all shadow-sm">
-					<span class="dark:hidden text-xl">🌙</span><span class="hidden dark:inline text-xl">☀️</span>
-				</button>
+				
+				<div class="flex items-center gap-6 mt-2">
+					<a href="/rss.xml" class="flex items-center gap-2 text-sm font-bold text-orange-600 dark:text-orange-500 hover:opacity-80 transition-opacity" title="Subscribe via RSS">
+						<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6.18,15.64A2.18,2.18,0,0,1,8.36,17.82,2.18,2.18,0,0,1,6.18,20,2.18,2.18,0,0,1,4,17.82,2.18,2.18,0,0,1,6.18,15.64ZM4,4.44A15.56,15.56,0,0,1,19.56,20h-2.83A12.73,12.73,0,0,0,4,7.27Zm0,5.66a9.9,9.9,0,0,1,9.9,9.9H11.07A7.17,7.17,0,0,0,4,12.93Z"/></svg>
+						<span class="hidden sm:inline">Subscribe</span>
+					</a>
+					<button id="themeToggle" class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 hover:scale-105 transition-all shadow-sm">
+						<span class="dark:hidden text-xl">🌙</span><span class="hidden dark:inline text-xl">☀️</span>
+					</button>
+				</div>
 			</nav>
 
 			{isBlogPost && (

@@ -63,10 +63,10 @@ const date = frontmatter?.date || "Mar 4, 2026";
 					</a>
 
 					<form id="newsletterForm" class="hidden md:flex items-center gap-2">
-						<input
-							type="email"
-							id="subEmail"
-							placeholder="Email for advisories"
+						<input 
+							type="email" 
+							id="subEmail" 
+							placeholder="Email for advisories" 
 							class="bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded px-3 py-1 text-xs focus:ring-1 focus:ring-blue-500 outline-none transition-all w-40"
 							required
 						/>
@@ -97,8 +97,8 @@ const date = frontmatter?.date || "Mar 4, 2026";
 				</div>
 			)}
 			
-			<article class="prose prose-slate prose-lg dark:prose-invert max-w-none
-				prose-headings:font-extrabold prose-headings:tracking-tight
+			<article class="prose prose-slate prose-lg dark:prose-invert max-w-none 
+				prose-headings:font-extrabold prose-headings:tracking-tight 
 				prose-a:text-blue-600 dark:prose-a:text-blue-400 prose-a:font-semibold
 				prose-pre:border prose-pre:border-slate-800
 				prose-code:text-blue-600 dark:prose-code:text-blue-300">
@@ -120,36 +120,43 @@ const date = frontmatter?.date || "Mar 4, 2026";
 		</script>
 
 		<script define:vars={{ apiURL: "https://ck6jfryidd.execute-api.us-east-1.amazonaws.com/prod/subscribe" }}>
-			document.getElementById('newsletterForm').addEventListener('submit', async (e) => {
-				e.preventDefault();
-				const email = document.getElementById('subEmail').value;
-				const btn = document.getElementById('subBtn');
-				
-				btn.innerText = '...';
-				btn.disabled = true;
+			const form = document.getElementById('newsletterForm');
+			if (form) {
+				form.addEventListener('submit', async (e) => {
+					e.preventDefault();
+					const emailInput = document.getElementById('subEmail');
+					const btn = document.getElementById('subBtn');
+					const email = emailInput.value.trim();
+					
+					btn.innerText = '...';
+					btn.disabled = true;
 
-				try {
-					const response = await fetch(apiURL, {
-						method: 'POST',
-						headers: { 'Content-Type': 'application/json' },
-						body: JSON.stringify({ email })
-					});
+					try {
+						const response = await fetch(apiURL, {
+							method: 'POST',
+							mode: 'cors',
+							headers: { 
+								'Content-Type': 'application/json' 
+							},
+							body: JSON.stringify({ email: email })
+						});
 
-					if (response.ok) {
-						alert('Success! Check your inbox for your advisory welcome email.');
-						document.getElementById('newsletterForm').reset();
-					} else {
-						const errData = await response.json();
-						throw new Error(errData.error || 'Server error');
+						if (response.ok) {
+							alert('Success! Check your inbox for your advisory welcome email.');
+							form.reset();
+						} else {
+							const errData = await response.json();
+							alert(`Error: ${errData.error || 'Server rejected request'}`);
+						}
+					} catch (err) {
+						console.error('Handshake failure:', err);
+						alert('AWS Connection Error. Check console for CORS details.');
+					} finally {
+						btn.innerText = 'Join';
+						btn.disabled = false;
 					}
-				} catch (err) {
-					console.error('Subscription error:', err);
-					alert('AWS Connection Error. Please try again later.');
-				} finally {
-					btn.innerText = 'Join';
-					btn.disabled = false;
-				}
-			});
+				});
+			}
 		</script>
 	</body>
 </html>

@@ -1,4 +1,5 @@
 ---
+layout: "../../layouts/Layout.astro"
 title: 'AWS Control Tower: How I Fixed my Brownfield Update Nightmare'
 date: '2026-03-05'
 description: 'Real-world fixes for AWS Control Tower update failures including Config Max Delivery Channel and CloudFormation name collisions.'

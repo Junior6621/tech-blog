@@ -2,9 +2,25 @@
 import '../styles/global.css';
 import Comments from '../components/Comments.astro';
 const { frontmatter } = Astro.props;
+
+// Metadata Extraction
 const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | Cloud Architect";
-const isBlogPost = Astro.url.pathname.startsWith('/blog');
-const date = frontmatter?.date || "Mar 4, 2026";
+const pubDate = frontmatter?.pubDate;
+
+// Reading Time Logic (Approx 200 words per minute)
+const wordsPerMinute = 200;
+const rawContent = Astro.props.rawContent ? Astro.props.rawContent() : "";
+const wordCount = rawContent.split(/\s+/g).length > 1 ? rawContent.split(/\s+/g).length : 450;
+const readingTime = Math.ceil(wordCount / wordsPerMinute);
+
+// Date Formatting
+const displayDate = pubDate 
+  ? new Date(pubDate).toLocaleDateString('en-us', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  : null;
 ---
 <!doctype html>
 <html lang="en">
@@ -40,9 +56,21 @@ const date = frontmatter?.date || "Mar 4, 2026";
 				</div>
 			</nav>
 
+			{displayDate && (
+				<div class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
+					<time datetime={pubDate}>{displayDate}</time>
+					<span>•</span>
+					<span>{readingTime} min read</span>
+				</div>
+			)}
+
 			<article class="prose prose-slate prose-lg dark:prose-invert max-w-none">
 				<slot />
 			</article>
+			
+			{pubDate && <div class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+				<Comments />
+			</div>}
 		</main>
 
 		<script define:vars={{ apiURL: "https://ck6jfryidd.execute-api.us-east-1.amazonaws.com/prod/subscribe" }}>
@@ -64,17 +92,14 @@ const date = frontmatter?.date || "Mar 4, 2026";
 						});
 
 						const text = await response.text();
-						console.log('Raw Response:', text);
-
-						if (response.ok && text) {
+						if (response.ok) {
 							alert('Success! Check your inbox.');
 							form.reset();
 						} else {
-							throw new Error(text || 'Empty response from server.');
+							throw new Error(text || 'Server error');
 						}
 					} catch (err) {
-						console.error('Failure:', err);
-						alert(`Connection Error: ${err.message}`);
+						alert(`Error: ${err.message}`);
 					} finally {
 						btn.innerText = 'Join';
 						btn.disabled = false;

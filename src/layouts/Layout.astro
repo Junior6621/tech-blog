@@ -5,28 +5,32 @@ import { getCollection } from 'astro:content';
 
 const { frontmatter, headings } = Astro.props;
 
-// Fetch latest posts for discovery
+// Fetch latest posts for the footer discovery section
 const allPosts = await getCollection('blog');
 const latestPosts = allPosts
   .filter(p => p.data.pubDate && p.slug !== Astro.params.slug)
   .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
   .slice(0, 3);
 
-// Metadata Extraction
+// Metadata Extraction for SEO
 const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | AWS Solutions Architect";
 const description = frontmatter?.description || "Technical insights and cloud architecture deep dives by Jeff Patton at Veritium Corp.";
 const pubDate = frontmatter?.pubDate;
+const updatedDate = frontmatter?.updatedDate;
 
-// Reading Time Logic
+// Reading Time Logic (approx 200 words per minute)
 const wordsPerMinute = 200;
 const rawContent = Astro.props.rawContent ? Astro.props.rawContent() : "";
 const wordCount = rawContent.split(/\s+/g).length > 1 ? rawContent.split(/\s+/g).length : 450;
 const readingTime = Math.ceil(wordCount / wordsPerMinute);
 
 // Date Formatting
-const displayDate = pubDate 
-  ? new Date(pubDate).toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })
+const formatDate = (date) => date 
+  ? new Date(date).toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })
   : null;
+
+const displayPubDate = formatDate(pubDate);
+const displayUpdatedDate = formatDate(updatedDate);
 
 const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 ---
@@ -37,9 +41,10 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 		<meta name="viewport" content="width=device-width" />
 		<title>{title}</title>
 		
+		<meta name="google-site-verification" content="google0a0e58dcb3843248" />
+
 		<meta name="description" content={description} />
 		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
-
 		<meta property="og:title" content={title} />
 		<meta property="og:description" content={description} />
 		<meta property="og:type" content="article" />
@@ -76,13 +81,20 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 				</div>
 			</nav>
 
-			{displayDate && (
+			{displayPubDate && (
 				<header class="mb-8">
 					<a href="/" class="text-blue-600 dark:text-blue-500 text-sm font-bold uppercase tracking-tighter hover:underline mb-4 inline-block">← Back to all posts</a>
-					<div class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">
+					<div class="flex flex-wrap items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">
 						<span>By Jeff Patton</span>
 						<span>•</span>
-						<time datetime={pubDate}>{displayDate}</time>
+						<time datetime={pubDate}>{displayPubDate}</time>
+						
+						{displayUpdatedDate && (
+							<span class="text-blue-600 dark:text-blue-500 font-bold italic ml-2">
+								(Updated: {displayUpdatedDate})
+							</span>
+						)}
+
 						<span>•</span>
 						<span>{readingTime} min read</span>
 					</div>

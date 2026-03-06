@@ -14,6 +14,7 @@ const latestPosts = allPosts
 
 // Metadata Extraction
 const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | AWS Solutions Architect";
+const description = frontmatter?.description || "Technical insights and cloud architecture deep dives by Jeff Patton at Veritium Corp.";
 const pubDate = frontmatter?.pubDate;
 
 // Reading Time Logic
@@ -27,7 +28,6 @@ const displayDate = pubDate
   ? new Date(pubDate).toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })
   : null;
 
-// Table of Contents filter (H2 and H3)
 const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 ---
 <!doctype html>
@@ -36,6 +36,17 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<title>{title}</title>
+		
+		<meta name="description" content={description} />
+		<link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="article" />
+		<meta property="og:url" content={Astro.url} />
+		<meta property="og:site_name" content="Jeff Patton | Veritium" />
+		<meta name="twitter:card" content="summary_large_image" />
+
 		<script is:inline>
 			const theme = (() => {
 				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) return localStorage.getItem('theme');
@@ -98,7 +109,7 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 			{pubDate && (
 				<footer class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
 					<div class="mb-12">
-						<h3 class="text-lg font-bold mb-6 italic">Latest from the blog</h3>
+						<h3 class="text-lg font-bold mb-6 italic text-slate-900 dark:text-white">Latest from the blog</h3>
 						<div class="grid gap-4">
 							{latestPosts.map(post => (
 								<a href={`/blog/${post.slug}`} class="block p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all hover:shadow-md">

@@ -1,16 +1,16 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig } from 'astro:config';
 import tailwindcss from '@tailwindcss/vite';
 import mdx from '@astrojs/mdx';
+import sitemap from '@astrojs/sitemap'; // New integration
 
-// https://astro.build/config
 export default defineConfig({
-  // This is required for RSS feed generation to create full URLs
   site: 'https://www.jeff-patton.com',
-  
+  integrations: [
+    mdx(),
+    sitemap(), // This generates the sitemap-index.xml on build
+  ],
   vite: {
     plugins: [tailwindcss()]
-  },
-
-  integrations: [mdx()]
+  }
 });

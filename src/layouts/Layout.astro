@@ -1,13 +1,13 @@
 ---
 import '../styles/global.css';
 import Comments from '../components/Comments.astro';
-const { frontmatter } = Astro.props;
+const { frontmatter, headings } = Astro.props;
 
 // Metadata Extraction
 const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | Cloud Architect";
 const pubDate = frontmatter?.pubDate;
 
-// Reading Time Logic (Approx 200 words per minute)
+// Reading Time Logic
 const wordsPerMinute = 200;
 const rawContent = Astro.props.rawContent ? Astro.props.rawContent() : "";
 const wordCount = rawContent.split(/\s+/g).length > 1 ? rawContent.split(/\s+/g).length : 450;
@@ -21,6 +21,9 @@ const displayDate = pubDate
       day: 'numeric',
     })
   : null;
+
+// Filter headings for TOC (only H2 and H3)
+const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 ---
 <!doctype html>
 <html lang="en">
@@ -60,22 +63,56 @@ const displayDate = pubDate
 			</nav>
 
 			{displayDate && (
-				<div class="mb-8 flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400">
-					<span>By Jeff Patton</span>
-					<span>•</span>
-					<time datetime={pubDate}>{displayDate}</time>
-					<span>•</span>
-					<span>{readingTime} min read</span>
-				</div>
+				<header class="mb-8">
+					<div class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">
+						<span>By Jeff Patton</span>
+						<span>•</span>
+						<time datetime={pubDate}>{displayDate}</time>
+						<span>•</span>
+						<span>{readingTime} min read</span>
+					</div>
+					
+					{toc && toc.length > 0 && (
+						<aside class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-6 my-8">
+							<h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 mt-0">Table of Contents</h2>
+							<ul class="list-none p-0 m-0 space-y-2">
+								{toc.map((heading) => (
+									<li class={`text-sm ${heading.depth === 3 ? 'ml-4' : ''}`}>
+										<a href={`#${heading.slug}`} class="text-blue-600 dark:text-blue-500 hover:underline">
+											{heading.text}
+										</a>
+									</li>
+								))}
+							</ul>
+						</aside>
+					)}
+				</header>
 			)}
 
 			<article class="prose prose-slate prose-lg dark:prose-invert max-w-none">
 				<slot />
 			</article>
 			
-			{pubDate && <div class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
-				<Comments />
-			</div>}
+			{pubDate && (
+				<footer class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+					<div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-8 flex flex-col md:flex-row gap-6 items-center">
+						<div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-black">JP</div>
+						<div class="flex-1 text-center md:text-left">
+							<h3 class="text-xl font-bold mb-2">About Jeff Patton</h3>
+							<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
+								Cloud Architect at Veritium Corp and certified home inspector. Specializing in AWS Control Tower, cloud governance, and cybersecurity infrastructure.
+							</p>
+							<div class="flex justify-center md:justify-start gap-4">
+								<a href="https://github.com/Junior6621" class="text-xs font-bold text-blue-600 dark:text-blue-500 uppercase tracking-tighter">GitHub</a>
+								<a href="/rss.xml" class="text-xs font-bold text-blue-600 dark:text-blue-500 uppercase tracking-tighter">RSS</a>
+							</div>
+						</div>
+					</div>
+					<div class="mt-12">
+						<Comments />
+					</div>
+				</footer>
+			)}
 		</main>
 
 		<script>

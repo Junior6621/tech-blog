@@ -1,38 +1,46 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { getCollection } from 'astro:content';
 
-// Fetch all posts from src/content/blog/
-const posts = await getCollection('blog');
-// Sort by date descending
-const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+// Since your posts are in src/pages/blog/, we use glob instead of getCollection
+const posts = await Astro.glob('./blog/*.md');
+
+// Sort by pubDate descending
+const sortedPosts = posts.sort((a, b) => 
+  new Date(b.frontmatter.pubDate).getTime() - new Date(a.frontmatter.pubDate).getTime()
+);
 ---
 
-<Layout title="Jeffrey Patton | Cloud Architect Blog">
+<Layout title="Jeffrey Patton | AWS Solutions Architect">
 	<section class="mb-12">
-		<h1 class="text-4xl font-extrabold mb-4">Cloud Architecture & Security</h1>
-		<p class="text-lg text-slate-600">Technical Insights, Cloud Architecture for the modern IT professional.</p>
+		<h1 class="text-4xl font-extrabold mb-4 text-slate-900 dark:text-white">Cloud Architecture & Security</h1>
+		<p class="text-lg text-slate-600 dark:text-slate-400">Technical insights and cloud architecture deep dives for the modern IT professional.</p>
 	</section>
 
-	<div class="space-y-10">
+	<div class="space-y-16">
 		{sortedPosts.map((post) => (
-			<article class="group">
-				<div class="flex flex-col md:flex-row md:items-baseline justify-between mb-2">
-					<h2 class="text-2xl font-bold group-hover:text-blue-600 transition">
-						<a href={`/blog/${post.slug}`}>{post.data.title}</a>
+			<article class="group relative flex flex-col items-start">
+				<div class="flex flex-col md:flex-row md:items-baseline justify-between w-full mb-2">
+					<h2 class="text-2xl font-bold group-hover:text-blue-600 dark:group-hover:text-blue-500 transition-colors">
+						<a href={post.url}>
+							{post.frontmatter.title}
+						</a>
 					</h2>
-					<time class="text-sm text-slate-500 font-mono">
-						{post.data.pubDate.toLocaleDateString('en-US', {
+					<time class="text-sm text-slate-500 dark:text-slate-400 font-mono mt-1 md:mt-0">
+						{new Date(post.frontmatter.pubDate).toLocaleDateString('en-US', {
 							year: 'numeric',
 							month: 'short',
 							day: 'numeric',
 						})}
 					</time>
 				</div>
-				<p class="text-slate-600 mb-4">{post.data.description}</p>
-				<div class="flex gap-2">
-					{post.data.tags.map(tag => (
-						<span class="bg-slate-100 text-slate-600 text-xs px-2 py-1 rounded">#{tag}</span>
+				<p class="text-slate-600 dark:text-slate-400 mb-4 leading-relaxed">
+					{post.frontmatter.description}
+				</p>
+				<div class="flex flex-wrap gap-2">
+					{post.frontmatter.tags?.map(tag => (
+						<span class="bg-slate-100 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-xs font-bold px-2 py-1 rounded uppercase tracking-wider">
+							#{tag}
+						</span>
 					))}
 				</div>
 			</article>

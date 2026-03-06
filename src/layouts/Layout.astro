@@ -1,13 +1,22 @@
 ---
 import '../styles/global.css';
 import Comments from '../components/Comments.astro';
+import { getCollection } from 'astro:content';
+
 const { frontmatter, headings } = Astro.props;
+
+// Fetch latest posts for discovery
+const allPosts = await getCollection('blog');
+const latestPosts = allPosts
+  .filter(p => p.data.pubDate && p.slug !== Astro.params.slug)
+  .sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime())
+  .slice(0, 3);
 
 // Metadata Extraction
 const title = frontmatter?.title || Astro.props.title || "Jeffrey Patton | AWS Solutions Architect";
 const pubDate = frontmatter?.pubDate;
 
-// Reading Time Logic (Approx 200 words per minute)
+// Reading Time Logic
 const wordsPerMinute = 200;
 const rawContent = Astro.props.rawContent ? Astro.props.rawContent() : "";
 const wordCount = rawContent.split(/\s+/g).length > 1 ? rawContent.split(/\s+/g).length : 450;
@@ -15,14 +24,10 @@ const readingTime = Math.ceil(wordCount / wordsPerMinute);
 
 // Date Formatting
 const displayDate = pubDate 
-  ? new Date(pubDate).toLocaleDateString('en-us', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    })
+  ? new Date(pubDate).toLocaleDateString('en-us', { year: 'numeric', month: 'long', day: 'numeric' })
   : null;
 
-// Filter headings for TOC (H2 and H3 only)
+// Table of Contents filter (H2 and H3)
 const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 ---
 <!doctype html>
@@ -33,9 +38,7 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 		<title>{title}</title>
 		<script is:inline>
 			const theme = (() => {
-				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
-					return localStorage.getItem('theme');
-				}
+				if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) return localStorage.getItem('theme');
 				return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 			})();
 			document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -64,6 +67,7 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 
 			{displayDate && (
 				<header class="mb-8">
+					<a href="/" class="text-blue-600 dark:text-blue-500 text-sm font-bold uppercase tracking-tighter hover:underline mb-4 inline-block">← Back to all posts</a>
 					<div class="flex items-center gap-2 text-sm font-medium text-slate-500 dark:text-slate-400 mb-4">
 						<span>By Jeff Patton</span>
 						<span>•</span>
@@ -74,13 +78,11 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 					
 					{toc && toc.length > 0 && (
 						<aside class="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-6 my-8">
-							<h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 mt-0">Table of Contents</h2>
+							<h2 class="text-sm font-bold uppercase tracking-widest text-slate-400 mb-4 mt-0">Inside this article</h2>
 							<ul class="list-none p-0 m-0 space-y-2">
 								{toc.map((heading) => (
 									<li class={`text-sm ${heading.depth === 3 ? 'ml-4' : ''}`}>
-										<a href={`#${heading.slug}`} class="text-blue-600 dark:text-blue-500 hover:underline">
-											{heading.text}
-										</a>
+										<a href={`#${heading.slug}`} class="text-blue-600 dark:text-blue-500 hover:underline">{heading.text}</a>
 									</li>
 								))}
 							</ul>
@@ -95,15 +97,27 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 			
 			{pubDate && (
 				<footer class="mt-16 pt-8 border-t border-slate-200 dark:border-slate-800">
+					<div class="mb-12">
+						<h3 class="text-lg font-bold mb-6 italic">Latest from the blog</h3>
+						<div class="grid gap-4">
+							{latestPosts.map(post => (
+								<a href={`/blog/${post.slug}`} class="block p-4 rounded-lg border border-slate-200 dark:border-slate-800 hover:border-blue-500 transition-all hover:shadow-md">
+									<h4 class="font-bold text-blue-600 dark:text-blue-500">{post.data.title}</h4>
+									<p class="text-xs text-slate-500 mt-1">{new Date(post.data.pubDate).toLocaleDateString('en-us', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+								</a>
+							))}
+						</div>
+					</div>
+
 					<div class="bg-slate-50 dark:bg-slate-900/50 rounded-xl p-8 flex flex-col md:flex-row gap-6 items-center">
-						<div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-black">JP</div>
+						<div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-2xl font-black italic">JP</div>
 						<div class="flex-1 text-center md:text-left">
 							<h3 class="text-xl font-bold mb-2">About Jeff Patton</h3>
 							<p class="text-slate-600 dark:text-slate-400 text-sm leading-relaxed mb-4">
 								AWS Solutions Architect Professional at Veritium Corp. Expert in cloud governance, AWS Control Tower implementations, and securing enterprise-scale infrastructure.
 							</p>
 							<div class="flex justify-center md:justify-start gap-4">
-								<a href="https://www.linkedin.com/in/jeffrey-r-patton-jr/" target="_blank" class="text-xs font-bold text-blue-600 dark:text-blue-500 uppercase tracking-tighter">LinkedIn</a>
+								<a href="https://www.linkedin.com/in/jpattonjr/" target="_blank" class="text-xs font-bold text-blue-600 dark:text-blue-500 uppercase tracking-tighter">LinkedIn</a>
 								<a href="/rss.xml" class="text-xs font-bold text-blue-600 dark:text-blue-500 uppercase tracking-tighter">RSS Feed</a>
 							</div>
 						</div>

@@ -18,7 +18,7 @@ const description = frontmatter?.description || "Technical insights and cloud ar
 const pubDate = frontmatter?.pubDate;
 const updatedDate = frontmatter?.updatedDate;
 
-// Reading Time Logic (approx 200 words per minute)
+// Reading Time Logic
 const wordsPerMinute = 200;
 const rawContent = Astro.props.rawContent ? Astro.props.rawContent() : "";
 const wordCount = rawContent.split(/\s+/g).length > 1 ? rawContent.split(/\s+/g).length : 450;
@@ -40,6 +40,14 @@ const toc = headings?.filter((h) => h.depth > 1 && h.depth < 4);
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width" />
 		<title>{title}</title>
+
+		<script async src="https://www.googletagmanager.com/gtag/js?id=G-LJY6CCNJ1B"></script>
+		<script is:inline>
+		  window.dataLayer = window.dataLayer || [];
+		  function gtag(){dataLayer.push(arguments);}
+		  gtag('js', new Date());
+		  gtag('config', 'G-LJY6CCNJ1B');
+		</script>
 		
 		<meta name="google-site-verification" content="Rro5Nq64FRNeJXDcuHvYFu35_BCJv-G0Dy1ps-wAj2A" />
 
